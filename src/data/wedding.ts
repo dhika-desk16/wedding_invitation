@@ -91,7 +91,7 @@ export const wedding = {
   rsvpDeadline: '2026-12-12T23:59:59+07:00',
   rsvpDeadlineLabel: '12 Desember 2026',
   whatsapp: '6281234567890',
-  musicSrc: 'public/music.mp3',
+  musicSrc: '/music.mp3',
 
   mapEventId: 'resepsi',
   events,
