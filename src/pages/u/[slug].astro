@@ -1,0 +1,12 @@
+---
+import Invitation from '../../components/Invitation.astro';
+import { resolvedGuests } from '../../lib/guests';
+
+export function getStaticPaths() {
+  return resolvedGuests.map((guest) => ({ params: { slug: guest.slug }, props: { guest } }));
+}
+
+const { guest } = Astro.props;
+---
+
+<Invitation guest={guest} />

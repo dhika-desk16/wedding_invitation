@@ -1,0 +1,61 @@
+---
+import { focusRing } from '../../lib/ui';
+
+interface Props {
+  label: string;
+  name: string;
+  as?: 'input' | 'select' | 'textarea';
+  options?: { value: string; label: string }[];
+  value?: string;
+  required?: boolean;
+  autocomplete?: string;
+  rows?: number;
+  guestInput?: boolean;
+}
+
+const {
+  label,
+  name,
+  as: tag = 'input',
+  options = [],
+  value,
+  required = false,
+  autocomplete,
+  rows = 4,
+  guestInput = false,
+} = Astro.props;
+
+const control = [
+  'w-full rounded-xl border border-[#c9a961] bg-[#f5edda] px-[0.85rem] py-[0.7rem] text-base font-light text-[#3b2f1f]',
+  focusRing,
+];
+---
+
+<label class="grid gap-1.5 text-[0.95rem]">
+  {label}
+  {
+    tag === 'input' && (
+      <input
+        type="text"
+        name={name}
+        value={value}
+        required={required}
+        autocomplete={autocomplete}
+        data-guest-input={guestInput ? '' : undefined}
+        class:list={control}
+      />
+    )
+  }
+  {
+    tag === 'select' && (
+      <select name={name} required={required} class:list={control}>
+        {options.map((o) => (
+          <option value={o.value} selected={o.value === value}>
+            {o.label}
+          </option>
+        ))}
+      </select>
+    )
+  }
+  {tag === 'textarea' && <textarea name={name} rows={rows} class:list={[...control, 'resize-y']} />}
+</label>

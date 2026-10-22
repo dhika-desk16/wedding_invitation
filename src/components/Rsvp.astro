@@ -1,0 +1,104 @@
+---
+import Section from './ui/Section.astro';
+import Button from './ui/Button.astro';
+import Field from './ui/Field.astro';
+import StatusBadge from './ui/StatusBadge.astro';
+import type { ResolvedGuest } from '../lib/guests';
+import { wedding, coupleName } from '../data/wedding';
+import { statusNote } from '../lib/rsvp';
+
+interface Props {
+  guest?: ResolvedGuest;
+}
+
+const { guest } = Astro.props;
+
+const attendance = [
+  { value: 'hadir', label: 'Insya Allah hadir' },
+  { value: 'tidak', label: 'Mohon maaf, tidak bisa hadir' },
+];
+const seatOptions = Array.from({ length: guest?.seats ?? 5 }, (_, i) => ({
+  value: String(i + 1),
+  label: `${i + 1} orang`,
+}));
+const initialAttendance = guest?.status === 'tidak' ? 'tidak' : 'hadir';
+---
+
+<Section id="rsvp" tone={guest ? 'ivory' : 'cream'} title="Konfirmasi kehadiran">
+  {
+    guest && (
+      <div class="mb-8 grid justify-items-center gap-2">
+        <StatusBadge status={guest.status} />
+        <p data-rsvp-note class="text-sm text-[#6b5b43]">
+          {statusNote(guest.status, false, wedding.rsvpDeadlineLabel)}
+        </p>
+      </div>
+    )
+  }
+
+  <div data-hide-after={wedding.rsvpDeadline}>
+    <p class="mx-auto mb-10 max-w-[52ch] text-[1.05rem]">
+      Kabari kami lewat WhatsApp agar kami dapat menyiapkan tempat untuk Anda.
+    </p>
+    <form
+      data-rsvp
+      data-wa={wedding.whatsapp}
+      data-couple={coupleName}
+      data-slug={guest?.slug}
+      data-deadline-label={wedding.rsvpDeadlineLabel}
+      class="grid gap-5 rounded-[2rem] border border-[#c9a961] bg-[#fffdf7] p-6 text-left shadow-[0_25px_60px_-35px_rgba(134,103,31,0.7)] sm:p-10"
+    >
+      <Field label="Nama" name="nama" value={guest?.name} required autocomplete="name" guestInput={!guest} />
+      <Field label="Kehadiran" name="hadir" as="select" options={attendance} value={initialAttendance} required />
+      <Field label="Jumlah tamu" name="jumlah" as="select" options={seatOptions} value={String(guest?.seats ?? 1)} />
+      <Field label="Ucapan dan doa" name="ucapan" as="textarea" />
+      <Button type="submit" class="mt-2 justify-self-center">Kirim lewat WhatsApp</Button>
+    </form>
+  </div>
+
+  <p class="hidden text-[1.05rem] text-[#6b5b43]" data-show-from={wedding.rsvpDeadline}>
+    Konfirmasi kehadiran sudah ditutup. Terima kasih atas doa dan perhatian Anda.
+  </p>
+</Section>
+
+<script>
+  import { buildRsvpUrl } from '../lib/whatsapp';
+  import { loadLocalRsvp, saveLocalRsvp, statusLabel, statusNote, type RsvpStatus } from '../lib/rsvp';
+
+  const form = document.querySelector<HTMLFormElement>('[data-rsvp]');
+  const badge = document.querySelector<HTMLElement>('[data-rsvp-badge]');
+  const note = document.querySelector<HTMLElement>('[data-rsvp-note]');
+
+  if (form) {
+    const { wa = '', couple = '', slug, deadlineLabel = '' } = form.dataset;
+
+    const render = (status: RsvpStatus) => {
+      if (badge) {
+        badge.dataset.status = status;
+        badge.textContent = statusLabel[status];
+      }
+      if (note) note.textContent = statusNote(status, true, deadlineLabel);
+    };
+
+    if (slug) {
+      const saved = loadLocalRsvp(slug);
+      if (saved) {
+        render(saved.status);
+        form.querySelector<HTMLSelectElement>('[name="hadir"]')!.value = saved.status;
+        form.querySelector<HTMLSelectElement>('[name="jumlah"]')!.value = saved.jumlah;
+      }
+    }
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const data = new FormData(form);
+      const status = data.get('hadir') === 'tidak' ? 'tidak' : 'hadir';
+
+      if (slug) {
+        saveLocalRsvp(slug, { status, jumlah: String(data.get('jumlah') ?? '1') });
+        render(status);
+      }
+      window.open(buildRsvpUrl(wa, couple, data), '_blank', 'noopener');
+    });
+  }
+</script>

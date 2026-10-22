@@ -1,0 +1,53 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Cover from './Cover.astro';
+import MusicToggle from './MusicToggle.astro';
+import NavDock from './NavDock.astro';
+import Hero from './Hero.astro';
+import Opening from './Opening.astro';
+import LoveStory from './LoveStory.astro';
+import Countdown from './Countdown.astro';
+import Events from './Events.astro';
+import Location from './Location.astro';
+import GuestInfo from './GuestInfo.astro';
+import Gallery from './Gallery.astro';
+import Gift from './Gift.astro';
+import GuestPass from './GuestPass.astro';
+import Rsvp from './Rsvp.astro';
+import Footer from './Footer.astro';
+import type { ResolvedGuest } from '../lib/guests';
+import { wedding, coupleName } from '../data/wedding';
+
+interface Props {
+  guest?: ResolvedGuest;
+}
+
+const { guest } = Astro.props;
+
+const title = guest ? `Undangan untuk ${guest.name} — ${coupleName}` : `${coupleName} — Undangan Pernikahan`;
+const description = guest
+  ? `${guest.name}, kami mengundang Anda ke pernikahan ${coupleName}, ${wedding.dateLabel}.`
+  : `Kami mengundang Anda ke pernikahan ${coupleName}, ${wedding.dateLabel}.`;
+---
+
+<Layout title={title} description={description} noindex={Boolean(guest)}>
+  <Cover guest={guest} />
+  <MusicToggle src={wedding.musicSrc} />
+  <NavDock />
+
+  <main>
+    <Hero />
+    <Opening />
+    <LoveStory />
+    <Countdown />
+    <Events />
+    <Location />
+    <GuestInfo />
+    <Gallery />
+    <Gift />
+    {guest && <GuestPass guest={guest} />}
+    <Rsvp guest={guest} />
+  </main>
+
+  <Footer />
+</Layout>

@@ -1,0 +1,67 @@
+---
+import { Image, getImage } from 'astro:assets';
+import Section from './ui/Section.astro';
+import { scrollIn } from '../lib/ui';
+
+const modules = import.meta.glob<{ default: ImageMetadata }>('../assets/picture/wedding_gallery/*.{jpg,jpeg,png,webp,avif}', {
+  eager: true,
+});
+
+const sources = Object.entries(modules)
+  .sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
+  .map(([, mod]) => mod.default);
+
+const photos = await Promise.all(
+  sources.map(async (src, i) => ({
+    src,
+    alt: `photo${i + 1}`,
+    full: (await getImage({ src, width: 1600 })).src,
+  })),
+);
+
+const shape = (i: number) => (i % 2 === 0 ? 'rounded-t-full' : 'rounded-2xl');
+const frame = (i: number) =>
+  `group m-0 aspect-[3/4] overflow-hidden bg-gradient-to-br from-[#fbf6e9] to-[#e2c57e] shadow-[0_20px_40px_-25px_rgba(59,47,31,0.6)] sm:nth-[3n+2]:mt-8 ${shape(i)} ${scrollIn}`;
+---
+
+<Section id="galeri" tone="cream" title="Galeri" wide>
+  <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
+    {
+      photos.length > 0
+        ? photos.map((photo, i) => (
+            <figure data-full={photo.full} data-reveal class:list={[frame(i), 'cursor-zoom-in']}>
+              <Image
+                src={photo.src}
+                alt={photo.alt}
+                width={800}
+                class="block size-full object-cover transition-transform duration-700 group-hover:scale-110"
+              />
+            </figure>
+          ))
+        : Array.from({ length: 6 }).map((_, i) => <figure data-reveal class={frame(i)} />)
+    }
+  </div>
+
+  <dialog
+    data-lightbox
+    aria-label="Foto galeri"
+    class="m-auto max-h-[94vh] max-w-[94vw] rounded-2xl border-0 bg-transparent p-0 backdrop:bg-[#3b2f1f]/90"
+  >
+    <img alt="" class="block max-h-[90vh] max-w-[94vw] cursor-zoom-out rounded-2xl" />
+  </dialog>
+</Section>
+
+<script>
+  const box = document.querySelector<HTMLDialogElement>('[data-lightbox]');
+  const boxImg = box?.querySelector('img');
+
+  document.querySelectorAll<HTMLElement>('[data-full]').forEach((figure) => {
+    figure.addEventListener('click', () => {
+      if (!box || !boxImg) return;
+      boxImg.src = figure.dataset.full ?? '';
+      box.showModal();
+    });
+  });
+
+  box?.addEventListener('click', () => box.close());
+</script>

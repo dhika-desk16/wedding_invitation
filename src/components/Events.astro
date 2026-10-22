@@ -1,0 +1,72 @@
+---
+import Section from './ui/Section.astro';
+import TextLink from './ui/TextLink.astro';
+import { wedding, coupleName } from '../data/wedding';
+import { mapsOpenUrl } from '../lib/maps';
+import { googleCalendarUrl, type CalendarEvent } from '../lib/calendar';
+import { display, scrollIn } from '../lib/ui';
+
+const format = (iso: string, options: Intl.DateTimeFormatOptions) =>
+  new Intl.DateTimeFormat('id-ID', { timeZone: 'Asia/Jakarta', ...options }).format(new Date(iso));
+
+const cards = wedding.events.map((event) => {
+  const calendar: CalendarEvent = {
+    title: `${event.title} ${coupleName}`,
+    start: event.start,
+    end: event.end,
+    location: `${event.venue}, ${event.address}`,
+    description: `${event.title} pernikahan ${coupleName}`,
+  };
+  return {
+    event,
+    calendar,
+    weekday: format(event.start, { weekday: 'long' }),
+    day: format(event.start, { day: 'numeric' }),
+    month: format(event.start, { month: 'long', year: 'numeric' }),
+  };
+});
+---
+
+<Section id="acara" tone="ivory" title="Detail acara">
+  <div class="grid gap-6 sm:grid-cols-2">
+    {
+      cards.map(({ event, calendar, weekday, day, month }, i) => (
+        <article
+          data-reveal
+          class:list={[
+            scrollIn,
+            'flex flex-col items-center rounded-t-[10rem] border border-[#c9a961] bg-[#f5edda] px-6 pb-10 pt-16 shadow-[0_25px_50px_-35px_rgba(134,103,31,0.7)]',
+            i === 1 ? 'delay-200' : '',
+          ]}
+        >
+          <p class="text-sm tracking-[0.1em] text-[#6b5b43]">{weekday}</p>
+          <p class:list={[display, 'text-[4.5rem] font-medium leading-none text-[#86671f]']}>{day}</p>
+          <p class="mb-5 text-sm tracking-[0.1em] text-[#6b5b43]">{month}</p>
+
+          <h3 class:list={[display, 'text-[2rem] font-semibold leading-[1.2]']}>{event.title}</h3>
+          <p class="mb-2 font-medium text-[#86671f]">{event.time}</p>
+          <p class="font-medium">{event.venue}</p>
+          <p class="text-[#6b5b43]">{event.address}</p>
+
+          <div class="mt-5 flex flex-wrap justify-center gap-x-5 gap-y-1 text-sm">
+            <TextLink href={mapsOpenUrl(event.mapQuery)} target="_blank" rel="noopener">
+              Buka peta
+            </TextLink>
+            <TextLink href={googleCalendarUrl(calendar)} target="_blank" rel="noopener">
+              Google Kalender
+            </TextLink>
+            <TextLink data-ics={JSON.stringify(calendar)}>Unduh .ics</TextLink>
+          </div>
+        </article>
+      ))
+    }
+  </div>
+</Section>
+
+<script>
+  import { downloadIcs, type CalendarEvent } from '../lib/calendar';
+
+  document.querySelectorAll<HTMLElement>('[data-ics]').forEach((btn) => {
+    btn.addEventListener('click', () => downloadIcs(JSON.parse(btn.dataset.ics ?? '{}') as CalendarEvent));
+  });
+</script>

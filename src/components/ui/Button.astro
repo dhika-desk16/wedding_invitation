@@ -1,0 +1,28 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import { focusRing } from '../../lib/ui';
+
+interface Props extends HTMLAttributes<'button'> {
+  variant?: 'solid' | 'light';
+}
+
+const { class: className, type = 'button', variant = 'solid', ...rest } = Astro.props;
+
+const variants = {
+  solid: 'border-[#86671f] bg-[#86671f] text-[#fbf6e9] hover:bg-transparent hover:text-[#86671f]',
+  light: 'border-[#e2c57e] bg-transparent text-[#e2c57e] hover:bg-[#e2c57e] hover:text-[#3b2f1f]',
+};
+---
+
+<button
+  type={type}
+  class:list={[
+    'cursor-pointer rounded-full border px-8 py-[0.85rem] text-[0.95rem] font-medium tracking-[0.04em] transition-colors',
+    variants[variant],
+    focusRing,
+    className,
+  ]}
+  {...rest}
+>
+  <slot />
+</button>

@@ -1,0 +1,74 @@
+---
+import Frame from './ui/Frame.astro';
+import type { ResolvedGuest } from '../lib/guests';
+import { wedding } from '../data/wedding';
+import { display } from '../lib/ui';
+
+interface Props {
+  guest?: ResolvedGuest;
+}
+
+const { guest } = Astro.props;
+const detail = guest && guest.seats > 1 ? `Undangan untuk ${guest.seats} orang` : guest?.label;
+const initials = `${wedding.bride[0]}&${wedding.groom[0]}`;
+---
+
+<section
+  id="cover"
+  aria-label="Sampul undangan"
+  class="fixed inset-0 z-50 overflow-hidden transition-[visibility] duration-[1600ms] motion-reduce:transition-none group-data-[opened]/body:invisible"
+>
+  <div
+    class="absolute inset-y-0 left-0 w-1/2 bg-[linear-gradient(90deg,#f5edda,#fbf6e9)] transition-[translate] duration-[1500ms] ease-[cubic-bezier(0.7,0,0.2,1)] motion-reduce:transition-none group-data-[opened]/body:-translate-x-full"
+  >
+  </div>
+  <div
+    class="absolute inset-y-0 right-0 w-1/2 bg-[linear-gradient(270deg,#f5edda,#fbf6e9)] transition-[translate] duration-[1500ms] ease-[cubic-bezier(0.7,0,0.2,1)] motion-reduce:transition-none group-data-[opened]/body:translate-x-full"
+  >
+  </div>
+
+  <div
+    class="relative z-10 grid h-full place-items-center p-6 text-center transition-[opacity,scale] duration-700 group-data-[opened]/body:scale-90 group-data-[opened]/body:opacity-0"
+  >
+    <Frame class="pointer-events-none absolute inset-3" />
+
+    <div class="flex max-w-[560px] flex-col items-center gap-1.5">
+      <p class:list={[display, 'text-[1.3rem] italic text-[#86671f]']}>Undangan pernikahan</p>
+      <h2 class:list={[display, 'mb-8 mt-2 text-[length:clamp(2.6rem,11vw,4.2rem)] font-medium leading-[1.1]']}>
+        {wedding.bride} <i class:list={[display, 'px-[0.1em] text-[#86671f]']}>&amp;</i>
+        {wedding.groom}
+      </h2>
+
+      <p class="text-sm text-[#6b5b43]">Kepada Yth.</p>
+      <div class="mb-10 flex flex-col items-center gap-0.5">
+        <p class:list={[display, 'text-[1.7rem] font-medium']} data-guest={guest ? undefined : ''}>
+          {guest?.name ?? 'Tamu undangan'}
+        </p>
+        {detail && <p class="text-sm text-[#6b5b43]">{detail}</p>}
+      </div>
+
+      <button
+        type="button"
+        data-open
+        aria-label="Buka undangan"
+        class="relative grid size-28 cursor-pointer place-items-center rounded-full bg-[radial-gradient(circle_at_30%_30%,#f3dd9a,#c9a961_55%,#86671f)] shadow-[0_14px_30px_-10px_rgba(134,103,31,0.8)] transition-transform hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#86671f]"
+      >
+        <span class="absolute -inset-3 animate-pulse rounded-full border border-[#c9a961]/60"></span>
+        <span class="absolute inset-2 rounded-full border border-[#3b2f1f]/25"></span>
+        <span class:list={[display, 'relative text-[1.9rem] font-semibold italic text-[#3b2f1f]']}>{initials}</span>
+      </button>
+      <p class="mt-4 text-sm tracking-[0.06em] text-[#6b5b43]">Ketuk segel untuk membuka undangan</p>
+    </div>
+  </div>
+</section>
+
+<script>
+  const cover = document.getElementById('cover');
+
+  document.querySelector('[data-open]')?.addEventListener('click', () => {
+    document.body.setAttribute('data-opened', '');
+    cover?.setAttribute('inert', '');
+    window.scrollTo(0, 0);
+    document.dispatchEvent(new CustomEvent('invitation:open'));
+  });
+</script>

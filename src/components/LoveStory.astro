@@ -1,0 +1,30 @@
+---
+import Section from './ui/Section.astro';
+import { wedding } from '../data/wedding';
+import { display, scrollIn } from '../lib/ui';
+---
+
+<Section id="kisah" tone="cream" title="Kisah kami">
+  <ol class="relative">
+    <span
+      aria-hidden="true"
+      class="absolute left-[7px] top-0 h-full w-px bg-gradient-to-b from-transparent via-[#c9a961] to-transparent sm:left-1/2"
+    ></span>
+    {
+      wedding.story.map((item) => (
+        <li
+          data-reveal
+          class:list={[
+            scrollIn,
+            'group relative pb-12 pl-10 text-left last:pb-0 sm:w-1/2 sm:pl-0 sm:pr-12 sm:text-right sm:even:ml-auto sm:even:pl-12 sm:even:pr-0 sm:even:text-left',
+          ]}
+        >
+          <span class="absolute left-0 top-2 size-4 rounded-full bg-[#86671f] ring-4 ring-[#f5edda] sm:left-auto sm:-right-2 sm:group-even:-left-2 sm:group-even:right-auto"></span>
+          <p class="text-sm tracking-[0.12em] text-[#86671f]">{item.date}</p>
+          <h3 class:list={[display, 'text-[1.8rem] font-semibold leading-[1.2]']}>{item.title}</h3>
+          <p class="mt-1 text-[#6b5b43]">{item.text}</p>
+        </li>
+      ))
+    }
+  </ol>
+</Section>

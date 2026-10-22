@@ -1,0 +1,41 @@
+---
+import Section from './ui/Section.astro';
+import { wedding } from '../data/wedding';
+import { display } from '../lib/ui';
+
+const units = [
+  { key: 'd', label: 'hari' },
+  { key: 'h', label: 'jam' },
+  { key: 'm', label: 'menit' },
+  { key: 's', label: 'detik' },
+];
+---
+
+<Section id="countdown" tone="ink" title="Menuju hari bahagia">
+  <span class="pointer-events-none absolute left-1/2 top-10 size-80 -translate-x-1/2 rounded-full bg-[#e2c57e]/10 blur-3xl"></span>
+  <div data-countdown data-target={wedding.target} aria-live="off" class="relative grid grid-cols-4 gap-2 sm:gap-4">
+    {
+      units.map((u) => (
+        <div class="relative rounded-2xl border border-[#e2c57e]/30 bg-[#fbf6e9]/5 px-1 py-6 backdrop-blur-sm">
+          <span class="absolute inset-x-0 top-1/2 h-px bg-[#e2c57e]/20" aria-hidden="true" />
+          <b
+            data-unit={u.key}
+            class:list={[
+              display,
+              'relative block text-[length:clamp(2rem,10vw,3.6rem)] font-medium leading-[1.1] text-[#e2c57e] tabular-nums',
+            ]}
+          >
+            0
+          </b>
+          <span class="relative mt-1 block text-xs tracking-[0.1em] opacity-80">{u.label}</span>
+        </div>
+      ))
+    }
+  </div>
+</Section>
+
+<script>
+  import { startCountdown } from '../lib/countdown';
+
+  document.querySelectorAll<HTMLElement>('[data-countdown]').forEach((el) => startCountdown(el));
+</script>

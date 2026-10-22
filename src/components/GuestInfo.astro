@@ -1,0 +1,45 @@
+---
+import Section from './ui/Section.astro';
+import { wedding } from '../data/wedding';
+import { display, scrollIn } from '../lib/ui';
+
+const { dressCode, info } = wedding;
+---
+
+<Section id="info" tone="ivory" title="Informasi untuk tamu">
+  <div class="mb-14">
+    <h3 class:list={[display, 'text-[1.8rem] font-semibold leading-[1.2]']}>Dress code · {dressCode.theme}</h3>
+    <p class="mx-auto mt-1 max-w-[46ch] text-[#6b5b43]">{dressCode.note}</p>
+    <ul class="mt-8 flex flex-wrap justify-center gap-8">
+      {
+        dressCode.colors.map((color) => (
+          <li class="grid justify-items-center gap-2 text-sm">
+            <span
+              class="size-16 rounded-full border border-[#c9a961] shadow-[0_10px_20px_-10px_rgba(59,47,31,0.5)] ring-4 ring-[#fbf6e9]"
+              style={`background:${color.hex}`}
+            />
+            {color.name}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <div class="grid gap-4 text-left sm:grid-cols-3">
+    {
+      info.map((item, i) => (
+        <div
+          data-reveal
+          class:list={[
+            scrollIn,
+            'rounded-2xl border border-[#c9a961] bg-[#f5edda] p-5',
+            i === 1 ? 'delay-150' : i === 2 ? 'delay-300' : '',
+          ]}
+        >
+          <h3 class:list={[display, 'text-[1.4rem] font-semibold leading-[1.2] text-[#86671f]']}>{item.title}</h3>
+          <p class="mt-1 text-[#6b5b43]">{item.text}</p>
+        </div>
+      ))
+    }
+  </div>
+</Section>

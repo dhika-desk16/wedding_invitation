@@ -1,0 +1,48 @@
+---
+import QRCode from 'qrcode';
+import Section from './ui/Section.astro';
+import TextLink from './ui/TextLink.astro';
+import type { ResolvedGuest } from '../lib/guests';
+import { wedding, coupleName } from '../data/wedding';
+import { display } from '../lib/ui';
+
+interface Props {
+  guest: ResolvedGuest;
+}
+
+const { guest } = Astro.props;
+
+const svg = await QRCode.toString(guest.url, {
+  type: 'svg',
+  margin: 1,
+  color: { dark: '#3b2f1f', light: '#fbf6e9' },
+});
+const download = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+const fileName = `qr-${guest.slug}.svg`;
+---
+
+<Section id="tiket" tone="cream" title="Tiket masuk">
+  <p class="mx-auto mb-10 max-w-[46ch] text-[1.05rem]">
+    Tunjukkan kode QR ini kepada penerima tamu saat tiba di lokasi acara.
+  </p>
+
+  <div class="relative mx-auto max-w-[320px] rounded-3xl border border-[#c9a961] bg-[#fbf6e9] px-6 pb-8 pt-7 shadow-[0_25px_50px_-30px_rgba(134,103,31,0.8)]">
+    <span class="absolute -left-3 top-[58%] size-6 rounded-full border border-[#c9a961] bg-[#f5edda]" aria-hidden="true"></span>
+    <span class="absolute -right-3 top-[58%] size-6 rounded-full border border-[#c9a961] bg-[#f5edda]" aria-hidden="true"></span>
+
+    <p class="text-xs tracking-[0.14em] text-[#86671f]">UNDANGAN PERNIKAHAN</p>
+    <p class:list={[display, 'text-[1.8rem] font-medium italic leading-[1.2]']}>{coupleName}</p>
+    <p class="text-sm text-[#6b5b43]">{wedding.dateLabel}</p>
+
+    <div class="mx-auto mt-5 size-52 rounded-2xl border border-[#c9a961] bg-[#fbf6e9] p-2 [&>svg]:size-full">
+      <Fragment set:html={svg} />
+    </div>
+
+    <div class="mt-8 border-t border-dashed border-[#c9a961] pt-5">
+      <p class:list={[display, 'text-[1.5rem] font-medium leading-[1.2]']}>{guest.name}</p>
+      {guest.seats > 1 && <p class="text-sm text-[#6b5b43]">Berlaku untuk {guest.seats} orang</p>}
+    </div>
+  </div>
+
+  <TextLink href={download} download={fileName} class="mt-6 inline-block text-sm">Unduh QR</TextLink>
+</Section>

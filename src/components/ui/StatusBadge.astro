@@ -1,0 +1,17 @@
+---
+import { statusLabel, type RsvpStatus } from '../../lib/rsvp';
+
+interface Props {
+  status: RsvpStatus;
+}
+
+const { status } = Astro.props;
+---
+
+<span
+  data-rsvp-badge
+  data-status={status}
+  class="inline-block rounded-full border border-[#c9a961] px-5 py-1.5 text-sm font-medium text-[#6b5b43] data-[status=hadir]:border-[#86671f] data-[status=hadir]:bg-[#86671f] data-[status=hadir]:text-[#fbf6e9] data-[status=tidak]:border-[#6b5b43] data-[status=tidak]:bg-[#6b5b43] data-[status=tidak]:text-[#fbf6e9]"
+>
+  {statusLabel[status]}
+</span>

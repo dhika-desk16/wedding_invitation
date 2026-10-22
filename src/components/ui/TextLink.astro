@@ -1,0 +1,22 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import { focusRing } from '../../lib/ui';
+
+type Props = HTMLAttributes<'a'>;
+const { class: className, href, ...rest } = Astro.props;
+const buttonProps = rest as HTMLAttributes<'button'>;
+
+const base = 'border-b border-[#c9a961] pb-0.5 text-[#86671f] no-underline hover:border-[#86671f]';
+---
+
+{
+  href ? (
+    <a href={href} class:list={[base, focusRing, className]} {...rest}>
+      <slot />
+    </a>
+  ) : (
+    <button type="button" class:list={['cursor-pointer', base, focusRing, className]} {...buttonProps}>
+      <slot />
+    </button>
+  )
+}

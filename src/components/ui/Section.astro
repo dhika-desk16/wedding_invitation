@@ -1,0 +1,55 @@
+---
+import Ornament from './Ornament.astro';
+import { display, scrollIn } from '../../lib/ui';
+
+interface Props {
+  tone?: 'cream' | 'ivory' | 'ink';
+  title?: string;
+  id?: string;
+  wide?: boolean;
+}
+
+const { tone = 'cream', title, id, wide = false } = Astro.props;
+
+const tones = {
+  cream: 'bg-[#f5edda] text-[#3b2f1f]',
+  ivory: 'bg-[#fbf6e9] text-[#3b2f1f]',
+  ink: 'bg-[#3b2f1f] text-[#fbf6e9]',
+};
+const titleColors = {
+  cream: 'text-[#86671f]',
+  ivory: 'text-[#86671f]',
+  ink: 'text-[#e2c57e]',
+};
+const headingId = id && title ? `${id}-title` : undefined;
+---
+
+<section
+  id={id}
+  aria-labelledby={headingId}
+  class:list={[
+    'relative -mt-10 overflow-hidden rounded-t-[2.5rem] px-6 pb-[clamp(4rem,10vw,7rem)] pt-[calc(clamp(4rem,10vw,7rem)_+_2.5rem)] shadow-[0_-14px_30px_-18px_rgba(59,47,31,0.4)]',
+    tones[tone],
+  ]}
+>
+  <div data-reveal class:list={[scrollIn, 'mx-auto text-center', wide ? 'max-w-[900px]' : 'max-w-[640px]']}>
+    {
+      title && (
+        <>
+          <h2
+            id={headingId}
+            class:list={[
+              display,
+              'mb-4 text-[length:clamp(2.4rem,8vw,3.6rem)] font-medium italic leading-[1.1]',
+              titleColors[tone],
+            ]}
+          >
+            {title}
+          </h2>
+          <Ornament />
+        </>
+      )
+    }
+    <slot />
+  </div>
+</section>

@@ -1,0 +1,40 @@
+---
+import Section from './ui/Section.astro';
+import { wedding } from '../data/wedding';
+import { display, scrollIn } from '../lib/ui';
+
+const couple = [
+  { name: wedding.bride, parents: wedding.brideParents },
+  { name: wedding.groom, parents: wedding.groomParents },
+];
+---
+
+<Section tone="ivory">
+  <p class="mx-auto mb-12 max-w-[52ch] text-[1.05rem]">
+    Dengan memohon rahmat dan ridho Allah SWT, kami mengundang Bapak/Ibu/Saudara/i untuk hadir dan memberikan doa
+    restu pada hari pernikahan kami.
+  </p>
+
+  <div class="grid items-center gap-6 sm:grid-cols-[1fr_auto_1fr]">
+    {
+      couple.map((person, i) => (
+        <>
+          {i === 1 && (
+            <i class:list={[display, 'text-[3.5rem] leading-none text-[#c9a961]']}>&amp;</i>
+          )}
+          <div
+            data-reveal
+            class:list={[
+              scrollIn,
+              'rounded-t-full border border-[#c9a961] bg-[#f5edda] px-6 pb-10 pt-24 shadow-[0_25px_50px_-35px_rgba(134,103,31,0.7)]',
+              i === 1 ? 'delay-200' : '',
+            ]}
+          >
+            <h2 class:list={[display, 'text-[2.6rem] font-medium leading-[1.15]']}>{person.name}</h2>
+            <p class="mt-2 text-[#6b5b43]">{person.parents}</p>
+          </div>
+        </>
+      ))
+    }
+  </div>
+</Section>

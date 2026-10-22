@@ -1,0 +1,33 @@
+---
+import Button from './ui/Button.astro';
+import { wedding, coupleName } from '../data/wedding';
+import { display } from '../lib/ui';
+---
+
+<footer
+  class="relative -mt-10 rounded-t-[2.5rem] bg-[#3b2f1f] px-6 pb-32 pt-24 text-center text-[#fbf6e9] shadow-[0_-14px_30px_-18px_rgba(59,47,31,0.4)]"
+>
+  <p class="mx-auto max-w-[40ch]">
+    Merupakan kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa
+    restu. Terima kasih.
+  </p>
+  <p class:list={[display, 'mt-6 text-[clamp(2.4rem,9vw,3.4rem)] italic text-[#e2c57e]']}>
+    {wedding.bride} &amp; {wedding.groom}
+  </p>
+  <Button
+    data-share
+    data-share-title={`Pernikahan ${coupleName}`}
+    data-share-text={`Kami mengundang Anda ke pernikahan ${coupleName}, ${wedding.dateLabel}.`}
+    data-share-url={wedding.siteUrl}
+    variant="light"
+    class="mt-8"
+  >
+    Bagikan undangan
+  </Button>
+</footer>
+
+<script>
+  import { bindShareButtons } from '../lib/share';
+
+  bindShareButtons();
+</script>

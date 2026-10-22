@@ -1,0 +1,84 @@
+---
+import { Image } from 'astro:assets';
+import Section from './ui/Section.astro';
+import TextLink from './ui/TextLink.astro';
+import { wedding } from '../data/wedding';
+import { display, focusRing, scrollIn } from '../lib/ui';
+
+const qrisModules = import.meta.glob<{ default: ImageMetadata }>('../assets/qris.{png,jpg,jpeg,webp}', {
+  eager: true,
+});
+const qris = Object.values(qrisModules)[0]?.default;
+---
+
+<Section id="amplop" tone="ivory" title="Amplop digital">
+  <p class="mx-auto mb-10 max-w-[52ch] text-[1.05rem]">
+    Doa restu Anda adalah hadiah terbaik bagi kami. Jika berkenan memberikan tanda kasih, Anda dapat
+    mengirimkannya melalui salah satu cara berikut.
+  </p>
+
+  <div class="grid gap-5 sm:grid-cols-2">
+    {
+      wedding.gifts.map((gift, i) => (
+        <div
+          data-reveal
+          class:list={[
+            scrollIn,
+            'relative min-h-52 overflow-hidden rounded-2xl bg-gradient-to-br from-[#ecd596] via-[#d4b469] to-[#b8923f] p-6 text-left text-[#3b2f1f] shadow-[0_25px_50px_-25px_rgba(134,103,31,0.9)]',
+            i === 1 ? 'delay-200' : '',
+          ]}
+        >
+          <span class="absolute -right-10 -top-12 size-44 rounded-full bg-[#fbf6e9]/25" aria-hidden="true"></span>
+          <span class="absolute -bottom-16 -left-8 size-40 rounded-full bg-[#fbf6e9]/15" aria-hidden="true"></span>
+
+          <div class="relative flex h-full min-h-40 flex-col justify-between gap-4">
+            <div class="flex items-start justify-between">
+              <span class="h-8 w-11 rounded-md bg-gradient-to-br from-[#fbf6e9]/90 to-[#e2c57e]" aria-hidden="true"></span>
+              <p class:list={[display, 'text-[1.6rem] font-semibold leading-none']}>{gift.bank}</p>
+            </div>
+            <div>
+              <p class="text-[1.3rem] tracking-[0.12em] tabular-nums">{gift.number}</p>
+              <p class="text-sm">{gift.holder}</p>
+            </div>
+            <button
+              type="button"
+              data-copy={gift.number}
+              class:list={[
+                'cursor-pointer self-start rounded-full bg-[#3b2f1f] px-4 py-1 text-xs text-[#fbf6e9] transition-opacity hover:opacity-85',
+                focusRing,
+              ]}
+            >
+              Salin nomor
+            </button>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+
+  {
+    qris && (
+      <div
+        data-reveal
+        class:list={[
+          scrollIn,
+          'mx-auto mt-6 w-full max-w-[280px] rounded-2xl border border-[#c9a961] bg-[#fbf6e9] p-3 shadow-[0_20px_40px_-25px_rgba(59,47,31,0.6)]',
+        ]}
+      >
+        <Image src={qris} alt="QRIS" width={560} class="block h-auto w-full rounded-lg" />
+      </div>
+    )
+  }
+
+  {
+    wedding.giftAddress && (
+      <div class="mt-10">
+        <p class="text-sm text-[#6b5b43]">Kirim kado ke</p>
+        <p class="font-medium">{wedding.giftAddress}</p>
+        <TextLink data-copy={wedding.giftAddress} class="mt-2 inline-block text-sm">
+          Salin alamat
+        </TextLink>
+      </div>
+    )
+  }
+</Section>
